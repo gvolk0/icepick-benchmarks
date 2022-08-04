@@ -4,6 +4,9 @@ const mori = require('mori')
 const Immutable = require('immutable')
 const seamless = require('seamless-immutable')
 const immer = require('immer')
+const iassign = require('immutable-assign')
+
+iassign.setOption({ freeze: false });
 
 let input
 
@@ -42,6 +45,15 @@ exports.libSuites = {
     assocNested: () => icepick.assocIn(input, [randomKey(), randomInt(), randomKey()], Math.random()),
     thaw: () => icepick.thaw(input)
   },
+  iassign: {
+    create: () => iassign(input, d => d),
+    access: () => input[randomKey()],
+    assoc: () => iassign(input, d => { d[randomKey()] = Math.random() }),
+    dissoc: () => iassign(input, d => { delete d[randomKey()] }),
+    accessNested: () => input[randomKey()][randomInt()][randomKey()],
+    assocNested: () => iassign(input, d => { d[randomKey()][randomInt()][randomKey()] = Math.random() }),
+    thaw: () => input
+  },
   seamless: {
     create: () => seamless(input),
     access: () => input[randomKey()],
@@ -77,5 +89,5 @@ exports.libSuites = {
     accessNested: () => mori.getIn(input, [randomKey(), randomInt(), randomKey()]),
     assocNested: () => mori.assocIn(input, [randomKey(), randomInt(), randomKey()], Math.random()),
     thaw: () => mori.toJs(input)
-  }
+  },
 }
